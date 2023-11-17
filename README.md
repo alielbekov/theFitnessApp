@@ -43,4 +43,5 @@ Special thanks to the course staff and team members for their contributions and 
 
 ---
 
-Remember to adjust the contents according to the actual implementation and functionalities of your project. This template serves as a starting point and can be expanded based on the specific details of your work.
+![image](https://github.com/alielbekov/theFitnessApp/assets/83210137/6899d688-e67e-4825-998b-2ef4821830b9)
+
