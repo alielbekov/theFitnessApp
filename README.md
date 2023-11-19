@@ -42,6 +42,6 @@ This project is a collaborative effort. Team members have worked on different co
 Special thanks to the course staff and team members for their contributions and support throughout the project.
 
 ---
-
+Source: https://www.youtube.com/watch?v=O_XL9oQ1_To&t=259s
 ![image](https://github.com/alielbekov/theFitnessApp/assets/83210137/6899d688-e67e-4825-998b-2ef4821830b9)
 
