@@ -56,8 +56,8 @@ RELATIONSHIPS:
 Entity-------Actions----------------Entity----------Relationship  
 ________________________________________________________________
 Member      (makes) a               Transaction     (1:M)       
-Member      (borrows) a piece of     Equipment       (1:M)       
+Member      (borrows) a piece of     Equipment      (1:M)       
 Member      (purchases) a           Package         (1:M)       
-Package     (includes)              Course          (1:1)       
+Package     (includes)              Course          (1:N)       
 Course is   (taught) by a           Trainer         (M:1)       
 ________________________________________________________________
