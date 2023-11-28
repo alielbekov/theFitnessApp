@@ -20,12 +20,12 @@ Package:
         price,              which is the price of the package
 
 PackageCourse:
-        name (PK, FK),      which is the name of the package [junior, semior, and strength] 
-        courseName (PK, FK) which is the name of the course the package includes
+        packageName (PK, FK) which is the name of the package [junior, semior, and strength] 
+        courseName (PK, FK)  which is the name of the course the package includes
 
 PackageMembers:
-        name (PK, FK),      which is the name of the package [junior, semior, and strength] 
-        memberId (PK, FK)   which is the id of a member that has purchased a package 'name'
+        packageName (PK, FK) which is the name of the package [junior, semior, and strength] 
+        memberId (PK, FK)    which is the id of a member that has purchased a package 'name'
 
 Trainer:
         id (PK),            which is the id of the trainer
