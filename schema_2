@@ -6,52 +6,58 @@ Member:
         totalSpending,      which is the total amount spend by the member
 
 Course: 
-        id (PK),            which is the id of the course
-        name,               which is the name of the course
+        name (PK),          which is the name of the course
         trainerID (FK),     which is the id of the trainer for the course
         weeklyClassTime,    which is the time of the week when the course takes place
         duration,           which is the duration of each training
         startDate,          which is the first day of the training
         endDate,            which is the last day of the training
+        currentParticipants, which is the current number of participants
         maxParticipants,    which is the maximum number of participants
 
-        packageId (FK).     which is the package id for the course       
-        currentParticipants, which is the current number of participants 
-
-
-Package: 
-        id (PK),            which is the id of the package
-        name,               which is the name of the package [junior, semior, and strength] 
+Package:
+        name (PK),          which is the name of the package [junior, semior, and strength] 
         price,              which is the price of the package
-        courseId (FK),      which is the id of the course the package includes
 
-Trainer: 
+PackageCourse:
+        packageName (PK, FK) which is the name of the package [junior, semior, and strength] 
+        courseName (PK, FK)  which is the name of the course the package includes
+
+PackageMembers:
+        packageName (PK, FK) which is the name of the package [junior, semior, and strength] 
+        memberId (PK, FK)    which is the id of a member that has purchased a package 'name'
+
+Trainer:
         id (PK),            which is the id of the trainer
         name,               which is the name of the trainer
         phone,              which is the phone number of the trainer
 
-Equipment: 
-        borrowId (PK),      which is the id of equiplment lent to a member
+Equipment:
+        name,               which is the name of the equipment 
+        available,          which is the quantity of the equipment available (not borrowed)
+        quantity,           which is the total quantity of the equipment
+
+Borrow:
         memberId (FK),      which is the id of the member borrowed the equiplment
         name,               which is the name of the equipment 
         checkoutTime,       which is the time it was borrowed
         returnTime,         which is the time it was returned
-        quantity,           which is the quantity of the equipment available
 
 Transaction: 
         id (PK),            which is the id of the transaction
         memberID (FK),      which is the member id
         amount,             which is the amount of the transaction
         date,               which is the date of the transaction
-        transactionType,    which is the type [{DUE, PROCESSING, FINISHED}, {CARD, CASH, CHECK}]
+        transactionStatus,  which is either DUE, PROCESSING, or FINISHED
+        transactionType,    which is either CARD, CASH, or CHECK
 
 
 RELATIONSHIPS:
 Entity-------Actions----------------Entity----------Relationship  
 ________________________________________________________________
 Member      (makes) a               Transaction     (1:M)       
-Member      (borrows) a piece of     Equipment       (1:M)       
+Member      (borrows) a piece of     Equipment      (1:M)       
 Member      (purchases) a           Package         (1:M)       
-Package     (includes)              Course          (1:1)       
+Package     (includes)              Course          (1:N)       
 Course is   (taught) by a           Trainer         (M:1)       
 ________________________________________________________________
