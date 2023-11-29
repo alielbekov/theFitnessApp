@@ -1,0 +1,70 @@
+Member: 
+        id (PK),            which is the id of the member
+        name,               which is the full name of the member
+        phone,              which is the phone number of the member
+        membershipLevel,    which is the membership level  of the member
+        totalSpending,      which is the total amount spend by the member [MAY BE REDUNDANT]
+
+Level:
+        name (PK),          which is the level of the member [Regular, Diamond, and Gold]
+        discount,           which is the discount amount in % [Regular: 0%, Diamond: 10%, Gold: 20%]
+        minSpendingAmount,  which is the minimum amount in $ to get the Level [Regular: 0$, Diamond: 500$, and Gold: 1000$]
+
+Course: 
+        name (PK),          which is the name of the course
+        trainerID (FK),     which is the id of the trainer for the course
+        weeklyClassTime,    which is the time of the week when the course takes place
+        duration,           which is the duration of each training
+        startDate,          which is the first day of the training
+        endDate,            which is the last day of the training
+        currentParticipants, which is the current number of participants
+        maxParticipants,    which is the maximum number of participants
+
+Package:
+        name (PK),          which is the name of the package [junior, semior, and strength] 
+        price,              which is the price of the package
+
+PackageCourse:
+        packageName (PK, FK) which is the name of the package [junior, semior, and strength] 
+        courseName (PK, FK)  which is the name of the course the package includes
+
+PackageMembers:
+        packageName (PK, FK) which is the name of the package [junior, semior, and strength] 
+        memberId (PK, FK)    which is the id of a member that has purchased a package 'name'
+
+Trainer:
+        id (PK),            which is the id of the trainer
+        name,               which is the name of the trainer
+        phone,              which is the phone number of the trainer
+
+Equipment:
+        name (PK),               which is the name of the equipment 
+        available,          which is the quantity of the equipment available (not borrowed)
+        quantity,           which is the total quantity of the equipment
+
+Borrow:
+        memberId (PK, FK),       which is the id of the member borrowed the equiplment
+        equipmentName (PK, FK)   which is the name of the equipment 
+        checkoutTime (PK),       which is the time it was borrowed
+        returnTime,              which is the time it was returned
+
+Transaction: 
+        id (PK),            which is the id of the transaction
+        memberID (FK),      which is the member id
+        amount,             which is the amount of the transaction
+        date,               which is the date of the transaction
+        transactionStatus,  which is either DUE, PROCESSING, or FINISHED
+        transactionType,    which is either CARD, CASH, or CHECK
+
+
+RELATIONSHIPS:
+Entity-------Actions----------------Entity----------Relationship  
+________________________________________________________________
+Member      (makes) a               Transaction     (1:M)       
+Member      (purchases) a           Package         (1:M)       
+Member      (can)                   Borrow          (1:M)
+Equipment   (can) be                Borrow(ed)      (1:M)
+Package     (includes)              Course          (1:M)       
+Course is   (taught) by a           Trainer         (M:1)       
+Member      (has) a                 Level           (M:1)
+________________________________________________________________
