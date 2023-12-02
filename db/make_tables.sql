@@ -61,8 +61,9 @@ create table PackageMembers (
 
 create table Equipment (
     name varchar(64) primary key,
-    available integer,
-    quantity integer
+    available integer check ( available >= 0 ),
+    quantity integer check ( quantity > 0 ),
+    check ( quantity >= available )
 );
 
 create table Borrow (
