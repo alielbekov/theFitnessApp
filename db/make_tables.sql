@@ -1,36 +1,29 @@
-create domain Phone varchar(22) not null constraint PHONE_CHECK check ( regexp_like(VALUE, '/^(\+\d\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/gm') );
-
-create domain Membership varchar(7) not null constraint MEMBERSHIP_CHECK check ( VALUE in ('Regular', 'Gold', 'Diamond') );
-
-create domain Money_Type numeric; -- todo: maybe add a check for positive numerics.
-
-create domain Weekday varchar(9) constraint WEEKDAY_CHECK check ( VALUE in ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday') );
-
 create table Trainer (
     id integer primary key,
     name varchar(128),
-    phone Phone
+    phone varchar(22) not null constraint TRAINER_PHONE_CHECK check ( regexp_like(phone, '/^(\+\d\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/gm') )
 );
 
-create table Level (
-    name Membership primary key,
+-- Level was renamed to Levels to avoid oracle db error.
+create table Levels (
+    name varchar(7) not null constraint LEVEL_CHECK check ( name in ('Regular', 'Gold', 'Diamond') ) primary key,
     discount integer,
-    minSpendingAmount Money_Type
+    minSpendingAmount numeric
 );
 
 create table Member (
     id integer not null primary key,
     name varchar(128) not null,
-    phone Phone,
-    membershipLevel Membership,
-    totalSpending Money_Type,
-    foreign key (membershipLevel) references Level(name)
+    phone varchar(22) not null constraint MEMBER_PHONE_CHECK check ( regexp_like(phone, '/^(\+\d\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/gm') ),
+    membershipLevel varchar(7) not null constraint MEMBERSHIP_CHECK check ( membershipLevel in ('Regular', 'Gold', 'Diamond') ),
+    totalSpending numeric,
+    foreign key (membershipLevel) references Levels(name)
 );
 
 create table Course (
     name varchar(128) primary key,
     trainerID integer,
-    weeklyClassTime Weekday,
+    weeklyClassTime varchar(9) constraint WEEKDAY_CHECK check ( weeklyClassTime in ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday') ),
     startDate date,
     endDate date,
     currentParticipants integer,
@@ -40,7 +33,7 @@ create table Course (
 
 create table Package (
     name varchar(128) primary key,
-    price Money_Type
+    price numeric
 );
 
 create table PackageCourse (
@@ -78,8 +71,8 @@ create table Borrow (
 create table Transaction (
     id integer primary key,
     memberID integer,
-    amount Money_Type,
-    date date,
+    amount numeric,
+    transactionDate date, -- renamed date to transactionDate to avoid oracle db error.
     transactionStatus varchar(10) constraint TRANS_STATUS check ( transactionStatus in ('DUE', 'PROCESSING', 'FINISHED')),
     transactionType varchar(5) constraint TRANS_TYPE check ( transactionType in ('CASH', 'CARD', 'CHECK')),
     foreign key (memberID) references Member(id)

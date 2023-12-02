@@ -7,11 +7,6 @@ drop table member;
 drop table course;
 
 drop table trainer;
-drop table level;
+drop table levels;
 drop table package;
 drop table equipment;
-
-drop domain phone;
-drop domain membership;
-drop domain money_type;
-drop domain weekday;
