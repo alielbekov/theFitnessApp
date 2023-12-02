@@ -1,7 +1,9 @@
+-- This script creates all of the tables for the database.
+
 create table Trainer (
     id integer primary key,
     name varchar(128),
-    phone varchar(22) not null constraint TRAINER_PHONE_CHECK check ( regexp_like(phone, '/^(\+\d\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/gm') )
+    phone varchar(22) not null constraint TRAINER_PHONE_CHECK check ( regexp_like(phone, '^(\+\d\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$') )
 );
 
 -- Level was renamed to Levels to avoid oracle db error.
@@ -14,7 +16,7 @@ create table Levels (
 create table Member (
     id integer not null primary key,
     name varchar(128) not null,
-    phone varchar(22) not null constraint MEMBER_PHONE_CHECK check ( regexp_like(phone, '/^(\+\d\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/gm') ),
+    phone varchar(22) not null constraint MEMBER_PHONE_CHECK check ( regexp_like(phone, '^(\+\d\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$') ),
     membershipLevel varchar(7) not null constraint MEMBERSHIP_CHECK check ( membershipLevel in ('Regular', 'Gold', 'Diamond') ),
     totalSpending numeric,
     foreign key (membershipLevel) references Levels(name)
