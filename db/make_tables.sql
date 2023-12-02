@@ -22,12 +22,16 @@ create table Member (
     foreign key (membershipLevel) references Levels(name)
 );
 
+-- Oracle does not support time type. >:(
+-- todo need feedback on time variables.
 create table Course (
     name varchar(128) primary key,
     trainerID integer,
     weeklyClassTime varchar(9) constraint WEEKDAY_CHECK check ( weeklyClassTime in ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday') ),
     startDate date,
     endDate date,
+    startTime integer check ( startTime >= 0 and startTime <= 2359 ), -- Military time in a 4 digit integer format.
+    endTime integer check ( endTime >= 0 and endTime <= 2359 ), -- Military time in a 4 digit integer format.
     currentParticipants integer,
     maxParticipants integer,
     foreign key (trainerID) references Trainer(id)
@@ -63,8 +67,8 @@ create table Equipment (
 create table Borrow (
     memberId integer,
     equipmentName varchar(128),
-    checkoutTime date,
-    returnTime date,
+    checkoutTime timestamp,
+    returnTime timestamp,
     primary key (memberId, equipmentName, checkoutTime),
     foreign key (memberId) references Member(id),
     foreign key (equipmentName) references Equipment(name)
