@@ -58,20 +58,20 @@ update member set totalspending = totalspending + (select price from package whe
 -- Borrows
 -- Alana borrows a yoga mat for 1 day.
 update equipment set available = available - 1 where name = 'Yoga mat';
-insert into borrow values ((select id from member where name = 'Alana Cohen'), 'Yoga mat', now(), now() + interval '1 day');
+insert into borrow values ((select id from member where name = 'Alana Cohen'), 'Yoga mat', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + interval '1' day);
 
 -- Tessa borrows a Rowing machine for 1 hour.
 update equipment set available = available - 1 where name = 'Rowing machine';
-insert into borrow values ((select id from member where name = 'Tessa Mendez'), 'Rowing machine', now(), now() + interval '1 hour');
+insert into borrow values ((select id from member where name = 'Tessa Mendez'), 'Rowing machine', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + interval '1' hour);
 
 -- Zaynah borrows a Squat rack for 30 minutes.
 update equipment set available = available - 1 where name = 'Squat rack';
-insert into borrow values ((select id from member where name = 'Zaynah Rocha'), 'Squat rack', now(), now() + interval '30 minutes');
+insert into borrow values ((select id from member where name = 'Zaynah Rocha'), 'Squat rack', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + interval '30' minute);
 
 -- Nikodem borrows a Resistance band for 2 days.
 update equipment set available = available - 1 where name = 'Resistance band';
-insert into borrow values ((select id from member where name = 'Nikodem Kramer'), 'Resistance band', now(), now() + interval '2 days');
+insert into borrow values ((select id from member where name = 'Nikodem Kramer'), 'Resistance band', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + interval '2' day);
 
 -- Leland borrows a Dumbbell for 2 hours.
 update equipment set available = available - 1 where name = 'Dumbbell';
-insert into borrow values ((select id from member where name = 'Leland Wilcox'), 'Dumbbell', now(), now() + interval '2 hours');
+insert into borrow values ((select id from member where name = 'Leland Wilcox'), 'Dumbbell', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + interval '2' hour);
