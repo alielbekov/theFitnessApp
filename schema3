@@ -17,6 +17,8 @@ Course:
         duration,           which is the duration of each training
         startDate,          which is the first day of the training
         endDate,            which is the last day of the training
+        startTime,          which is the time the class starts.
+        endTime,            which is the time the class ends.
         currentParticipants, which is the current number of participants
         maxParticipants,    which is the maximum number of participants
 
