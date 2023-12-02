@@ -2,7 +2,7 @@
 
 create table Trainer (
     id integer primary key,
-    name varchar(128),
+    name varchar(64),
     phone varchar(22) not null constraint TRAINER_PHONE_CHECK check ( regexp_like(phone, '^(\+\d\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$') )
 );
 
@@ -15,7 +15,7 @@ create table Levels (
 
 create table Member (
     id integer not null primary key,
-    name varchar(128) not null,
+    name varchar(64) not null,
     phone varchar(22) not null constraint MEMBER_PHONE_CHECK check ( regexp_like(phone, '^(\+\d\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$') ),
     membershipLevel varchar(7) not null constraint MEMBERSHIP_CHECK check ( membershipLevel in ('Regular', 'Gold', 'Diamond') ),
     totalSpending numeric,
@@ -25,7 +25,7 @@ create table Member (
 -- Oracle does not support time type. >:(
 -- todo need feedback on time variables.
 create table Course (
-    name varchar(128) primary key,
+    name varchar(64) primary key,
     trainerID integer,
     weeklyClassTime varchar(9) constraint WEEKDAY_CHECK check ( weeklyClassTime in ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday') ),
     -- duration float, -- fixme: why is this a float? or even needed?
@@ -39,20 +39,20 @@ create table Course (
 );
 
 create table Package (
-    name varchar(128) primary key,
+    name varchar(64) primary key,
     price numeric
 );
 
 create table PackageCourse (
-    packageName varchar(128),
-    courseName varchar(128),
+    packageName varchar(64),
+    courseName varchar(64),
     primary key (packageName, courseName),
     foreign key (packageName) references Package(name),
     foreign key (courseName) references Course(name)
 );
 
 create table PackageMembers (
-    packageName varchar(128),
+    packageName varchar(64),
     memberId integer,
     primary key (packageName, memberId),
     foreign key (packageName) references Package(name),
@@ -60,14 +60,14 @@ create table PackageMembers (
 );
 
 create table Equipment (
-    name varchar(128) primary key,
+    name varchar(64) primary key,
     available integer,
     quantity integer
 );
 
 create table Borrow (
     memberId integer,
-    equipmentName varchar(128),
+    equipmentName varchar(64),
     checkoutTime timestamp,
     returnTime timestamp,
     primary key (memberId, equipmentName, checkoutTime),

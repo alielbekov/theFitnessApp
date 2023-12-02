@@ -1,14 +1,15 @@
 -- This script adds all of the required data into the database.
 
-insert into trainer values (1, 'Ash Ketchum', '(760)555-5555'); -- Need at least one trainer.
+-- Need at least one trainer.
+insert into trainer values (1, 'Ash Ketchum', '(760)555-5555');
 
 -- junior courses
-insert into course values ('Strength 001', 1, 'monday', CURRENT_DATE, '11-2-2025', 1200, 1300, 0, 100);
-insert into course values ('Yoga 001', 1, 'tuesday', CURRENT_DATE, '11-2-2025', 1200, 1300, 0, 100);
+insert into course values ('Strength 001', 1, 'monday', CURRENT_DATE, to_date('11/2/2025','MM/DD/YYYY'), 1200, 1300, 0, 100);
+insert into course values ('Yoga 001', 1, 'tuesday', CURRENT_DATE, to_date('11/2/2025','MM/DD/YYYY'), 1200, 1300, 0, 100);
 
 -- senior courses
-insert into course values ('Strength 002', 1, 'wednesday', CURRENT_DATE, '11-2-2025', 1200, 1300, 0, 100);
-insert into course values ('Yoga 002', 1, 'thursday', CURRENT_DATE, '11-2-2025', 1200, 1300, 0, 100);
+insert into course values ('Strength 002', 1, 'wednesday', CURRENT_DATE, to_date('11/2/2025','MM/DD/YYYY'), 1200, 1300, 0, 100);
+insert into course values ('Yoga 002', 1, 'thursday', CURRENT_DATE, to_date('11/2/2025','MM/DD/YYYY'), 1200, 1300, 0, 100);
 
 insert into package values ('Junior', 1);
 insert into package values ('Senior', 1);
