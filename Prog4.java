@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.Scanner;
 import java.util.TimeZone;
 
-public class Main {
+public class Prog4 {
     private static final String postgresURL = "jdbc:postgresql://localhost:5432/eddie";
     private static final String oracleURL = // Magic lectura -> aloe access spell
             "jdbc:oracle:thin:@aloe.cs.arizona.edu:1521:oracle";
