@@ -249,7 +249,7 @@ public class Prog4 {
             default -> throw new IllegalStateException("Unexpected value: " + cal.get(Calendar.DAY_OF_WEEK));
         };
 
-        return String.format("%s %s %02d %d", dayOfWeek, month, cal.get(Calendar.DAY_OF_WEEK), cal.get(Calendar.YEAR));
+        return String.format("%s %s %02d %d", dayOfWeek, month, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.YEAR));
     }
 
     /**
