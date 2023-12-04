@@ -31,8 +31,8 @@ create table Course (
     -- duration float, -- fixme: why is this a float? or even needed?
     startDate date,
     endDate date,
-    startTime integer constraint START_MILITARY_TIME check ( startTime >= 0 and startTime <= 2359 and startTime % 100 < 60 ), -- Military time in a 4 digit integer format.
-    endTime integer constraint END_MILITARY_TIME check ( endTime >= 0 and endTime <= 2359 and endTime % 100 < 60 ), -- Military time in a 4 digit integer format.
+    startTime integer constraint START_MILITARY_TIME check ( startTime >= 0 and startTime <= 2359 and MOD(startTime, 100) < 60 ), -- Military time in a 4 digit integer format.
+    endTime integer constraint END_MILITARY_TIME check ( endTime >= 0 and endTime <= 2359 and MOD(endTime, 100) < 60 ), -- Military time in a 4 digit integer format.
     currentParticipants integer,
     maxParticipants integer,
     foreign key (trainerID) references Trainer(id)
