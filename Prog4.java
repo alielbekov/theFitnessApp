@@ -4,6 +4,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Calendar;
 import java.util.Scanner;
 import java.util.TimeZone;
@@ -29,7 +31,7 @@ public class Prog4 {
         if (!usePostgresURL && args.length == 2) {
             username = args[0];
             password = args[1];
-        } else if(!usePostgresURL) {
+        } else if (!usePostgresURL) {
             System.out.println("\nUsage:  java Main <username> <password>\n"
                     + "    where <username> is your Oracle DBMS"
                     + " username,\n    and <password> is your Oracle"
@@ -63,21 +65,23 @@ public class Prog4 {
             // Get user input from getNextAction()
             switch (choice) {
                 case 1:
-                    // Insert a new member into the database
+                    insertMember(stmt);
                     break;
                 case 2:
-                    // Delete a member from the database
+                    deleteMember(stmt);
                     break;
                 case 3:
-                    // Insert a new course into the database
+                    insertCourse(stmt);
                     break;
                 case 4:
-                    // Delete a course from the database
+                    deleteCourse(stmt);
                     break;
                 case 5:
-                    // Add, update, or delete a course package
+                    manageCoursePackage(stmt);
                     break;
-                // ....
+                case 6:
+                    break;
+
             }
 
             // The queries that the application is to be able to answer:
@@ -155,7 +159,7 @@ public class Prog4 {
         // Make sure to handle any exceptions that may occur during the deletion process
     }
 
-        // Add a new method for course insertion
+    // Add a new method for course insertion
     private static void insertCourse(Statement stmt) throws SQLException {
         // Implement logic to get course information from the user and insert it into
         // the database
@@ -295,7 +299,7 @@ public class Prog4 {
             e.printStackTrace();
         }
     }
-    
+
     // Add a new method for course package insertion/update/deletion
     private static void manageCoursePackage(Statement stmt) throws SQLException {
         // Implement logic to add, update, or delete a course package
@@ -462,7 +466,8 @@ public class Prog4 {
                 cal.setTime(currentDate);
 
                 if (cal.get(Calendar.DAY_OF_WEEK) == weeklyClassTime) {
-                    System.out.println("  " + dateToString(cal) + ": " + militaryTimeToRegularTime(startTime) + " - " + militaryTimeToRegularTime(endTime));
+                    System.out.println("  " + dateToString(cal) + ": " + militaryTimeToRegularTime(startTime) + " - "
+                            + militaryTimeToRegularTime(endTime));
                 }
 
                 cal.add(Calendar.DATE, 1);
@@ -490,8 +495,9 @@ public class Prog4 {
         System.out.print("Name of the trainer: ");
         String trainerName = user.nextLine();
 
-        ResultSet rs = stmt.executeQuery("select Course.name, weeklyclasstime, starttime, endtime, startdate, enddate from course " +
-                "join trainer on trainerid = trainer.id and trainer.name = '" + trainerName + "'");
+        ResultSet rs = stmt.executeQuery(
+                "select Course.name, weeklyclasstime, starttime, endtime, startdate, enddate from course " +
+                        "join trainer on trainerid = trainer.id and trainer.name = '" + trainerName + "'");
 
         while (rs.next()) {
             String courseName = rs.getString(1);
@@ -542,7 +548,8 @@ public class Prog4 {
                 cal.setTime(currentDate);
 
                 if (cal.get(Calendar.DAY_OF_WEEK) == weeklyClassTime) {
-                    System.out.println("  " + dateToString(cal) + ": " + militaryTimeToRegularTime(startTime) + " - " + militaryTimeToRegularTime(endTime));
+                    System.out.println("  " + dateToString(cal) + ": " + militaryTimeToRegularTime(startTime) + " - "
+                            + militaryTimeToRegularTime(endTime));
                 }
 
                 cal.add(Calendar.DATE, 1);
@@ -569,4 +576,3 @@ public class Prog4 {
     }
 
 }
-
