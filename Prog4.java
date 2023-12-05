@@ -971,13 +971,19 @@ private static void deletePackageMemberRecord(Connection dbconn, String packageN
      * SHOW THE NAMES OF ALL MEMBERS THAT HAVE BORROWED AN EQUIPMENT
      * THAT IS NO LONGER AVAILABLE TO BE BORROWED.
      */
-    private static void customQuery(Statement stmt, String userProvidedInfo) throws SQLException {
+    private static void customQuery(Statement stmt) throws SQLException {
         String query = "Select id, name, phone from MEMBER" +
                 " JOIN BORROW on member.id = borrow.memberid " +
                 " JOIN EQUIPMENT on on borrow.name = equipment.name" + 
                 " WHERE equipment.available = 0 ";
         
         ResultSet rs = stmt.executeQuery(query);
+        while (rs.next()){
+            String id = rs.getString(1);
+            String name = rs.getString(2);
+            String phone = rs.getString(3);
+            System.out.println(id + "\t" + name + "\t" + phone);
+        }
             
     }
 
