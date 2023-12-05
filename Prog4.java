@@ -701,6 +701,26 @@ private static void deletePackageMemberRecord(Connection dbconn, String packageN
     private static void manageCoursePackage(Statement stmt) throws SQLException {
         // Implement logic to add, update, or delete a course package
         // Make sure to handle any exceptions that may occur during the process
+        Scanner sc = new Scanner(System.in);
+        Systen.out.println(" OPERATION SELECTION: TYPE insert / update / delete");
+        String operation = sc.nextLine();
+        if (operation == "insert"){
+            System.out.println("Enter the name of the package course to add: ");
+            String packageName = sc.nextLine();
+            System.out.println("Enter course to include inside the package: ");
+            String courseName = sc.nextLine();
+            String add_query = "INSERT INTO packagecourse values (" + 
+                    "\'" + packageName + "\', "+
+                    "courseName";
+            stmt.executeQuery(add_query);
+        }
+        if (operation == "delete"){
+            System.out.println("What is the name of the package you want to delete?");
+            String packageName = sc.nextLine();
+            String delete_query = "DELETE FROM packagecourse WHERE packageName = \'" + 
+                    packageName + "\'";
+            stmt.executeQuery(delete_query);
+        }
     }
 
     /**
