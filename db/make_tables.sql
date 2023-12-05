@@ -82,6 +82,5 @@ create table Transaction (
     amount numeric,
     transactionDate date, -- renamed date to transactionDate to avoid oracle db error.
     transactionStatus varchar(10) constraint TRANS_STATUS check ( transactionStatus in ('DUE', 'PROCESSING', 'FINISHED')),
-    transactionType varchar(5) constraint TRANS_TYPE check ( transactionType in ('CASH', 'CARD', 'CHECK')),
-    foreign key (memberID) references Member(id)
+    transactionType varchar(5) constraint TRANS_TYPE check ( transactionType in ('CASH', 'CARD', 'CHECK'))
 );
