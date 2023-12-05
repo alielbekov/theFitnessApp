@@ -68,7 +68,7 @@ public class Prog4 {
                     insertMember(dbconn);
                     break;
                 case 2:
-                    // Delete a member from the database
+                    deleteMember(dbconn);
                     break;
                 case 3:
                     insertCourse(stmt);
@@ -166,8 +166,8 @@ private static void insertMember(Connection dbconn) throws SQLException {
     int rowsAffected = pstmt.executeUpdate();
     if (rowsAffected > 0) {
         System.out.println("Member added successfully.");
-        printAllMembers(dbconn);
-        displayPackagesWithCourses(dbconn);
+        //printAllMembers(dbconn);
+        displayPackagesWithCourses(dbconn,memberId);
         // Display available packages and handle package selection
     } else {
         System.out.println("Error: Member could not be added.");
@@ -176,7 +176,7 @@ private static void insertMember(Connection dbconn) throws SQLException {
     pstmt.close();
 }
 
-private static void displayPackagesWithCourses(Connection dbconn) throws SQLException {
+private static void displayPackagesWithCourses(Connection dbconn, int memberId) throws SQLException {
     String packageQuery = "SELECT name, price FROM Package ORDER BY name";
     Statement packageStmt = dbconn.createStatement();
     ResultSet packageRs = packageStmt.executeQuery(packageQuery);
@@ -196,7 +196,7 @@ private static void displayPackagesWithCourses(Connection dbconn) throws SQLExce
     }
 
     packageStmt.close();
-    selectAndLinkPackage(dbconn, packageNames);
+    selectAndLinkPackage(dbconn, packageNames, memberId);
 }
 private static boolean areCoursesAvailable(Connection dbconn, String packageName) throws SQLException {
     String courseQuery = "SELECT c.maxParticipants, c.currentParticipants " +
@@ -256,7 +256,7 @@ private static void printAllMembers(Connection dbconn) throws SQLException {
     stmt.close();
 }
 
-private static void selectAndLinkPackage(Connection dbconn, List<String> packageNames) throws SQLException {
+private static void selectAndLinkPackage(Connection dbconn, List<String> packageNames, int memberId) throws SQLException {
     Scanner sc = new Scanner(System.in);
     System.out.print("Select a package number: ");
     int choice = sc.nextInt();
@@ -268,7 +268,6 @@ private static void selectAndLinkPackage(Connection dbconn, List<String> package
 
     // Fetching the memberId of the most recently added member
     // Assuming you are calling this right after adding a member
-    int memberId = getLastInsertedMemberId(dbconn);
 
     String selectedPackageName = packageNames.get(choice - 1);
     linkMemberToPackage(dbconn, memberId, selectedPackageName);
@@ -288,6 +287,9 @@ private static void linkMemberToPackage(Connection dbconn, int memberId, String 
         System.out.println("Member successfully linked to package " + packageName + ".");
         printPackageMembers(dbconn);
         updateCourseParticipants(dbconn, packageName);
+        addDueTransaction(dbconn, packageName, memberId );
+        printAllTransactions(dbconn);
+
 
 
     } else {
@@ -311,6 +313,75 @@ private static void updateCourseParticipants(Connection dbconn, String packageNa
         updateStmt.close();
     }
     courseStmt.close();
+}
+private static void addDueTransaction(Connection dbconn,  String packageName, int memberId) throws SQLException {
+    // Fetch the package price
+    String priceQuery = "SELECT price FROM Package WHERE name = ?";
+    PreparedStatement priceStmt = dbconn.prepareStatement(priceQuery);
+    priceStmt.setString(1, packageName);
+    ResultSet priceRs = priceStmt.executeQuery();
+    
+    if (!priceRs.next()) {
+        System.out.println("Error: Package not found.");
+        return;
+    }
+    double packagePrice = priceRs.getDouble("price");
+    priceStmt.close();
+
+    // Generate a unique transaction ID
+    int transactionId = getNextTransactionId(dbconn);
+
+    // Insert the transaction
+    String insertSql = "INSERT INTO Transaction (id, memberID, amount, transactionDate, transactionStatus) VALUES (?, ?, ?, CURRENT_DATE, 'DUE')";
+    PreparedStatement insertStmt = dbconn.prepareStatement(insertSql);
+
+    insertStmt.setInt(1, transactionId);
+    insertStmt.setInt(2, memberId);
+    insertStmt.setDouble(3, packagePrice);
+
+    int rowsAffected = insertStmt.executeUpdate();
+    if (rowsAffected > 0) {
+        System.out.println("Due transaction added successfully for member ID " + memberId + ".");
+    } else {
+        System.out.println("Error: Could not add due transaction.");
+    }
+
+    insertStmt.close();
+}
+
+
+private static int getNextTransactionId(Connection dbconn) throws SQLException {
+    String query = "SELECT MAX(id) FROM Transaction";
+    Statement stmt = dbconn.createStatement();
+    ResultSet rs = stmt.executeQuery(query);
+
+    int nextId = 1; // Start from 1 if no transactions exist
+    if (rs.next()) {
+        nextId = rs.getInt(1) + 1; // Increment the highest ID by 1
+    }
+
+    stmt.close();
+    return nextId;
+}
+private static void printAllTransactions(Connection dbconn) throws SQLException {
+    String query = "SELECT * FROM Transaction";
+    Statement stmt = dbconn.createStatement();
+    ResultSet rs = stmt.executeQuery(query);
+
+    System.out.println("ID\tMember ID\tAmount\t\tTransaction Date\tStatus\t\tType");
+    System.out.println("------------------------------------------------------------------------------------");
+    while (rs.next()) {
+        int id = rs.getInt("id");
+        int memberId = rs.getInt("memberID");
+        double amount = rs.getDouble("amount");
+        Date transactionDate = rs.getDate("transactionDate");
+        String status = rs.getString("transactionStatus");
+        String type = rs.getString("transactionType");
+
+        System.out.printf("%d\t%d\t\t%.2f\t\t%s\t\t%s\t\t%s\n", id, memberId, amount, transactionDate, status, type);
+    }
+
+    stmt.close();
 }
 
 private static void printPackageMembers(Connection dbconn) throws SQLException {
@@ -344,28 +415,133 @@ private static int getNextMemberId(Connection dbconn) throws SQLException {
     return nextId;
 }
 
-private static int getLastInsertedMemberId(Connection dbconn) throws SQLException {
-    String query = "SELECT MAX(id) FROM Member";
-    Statement stmt = dbconn.createStatement();
-    ResultSet rs = stmt.executeQuery(query);
 
-    if (rs.next()) {
-        return rs.getInt(1);
+private static void deleteMember(Connection dbconn) throws SQLException {
+    Scanner sc = new Scanner(System.in);
+    printAllMembers(dbconn);
+    System.out.print("Enter member ID to delete: ");
+    int memberId = sc.nextInt();
+
+    // Check for unreturned equipment and mark as lost
+    handleUnreturnedEquipment(dbconn, memberId);
+
+    // Check for unpaid balances
+    if (hasUnpaidBalances(dbconn, memberId)) {
+        System.out.println("Member has unpaid balances. Cannot delete.");
+        printUnpaidBalances(dbconn, memberId);
+        return;
     }
 
-    stmt.close();
-    return -1; // Or handle this scenario appropriately
+    // Check for active course participation and remove
+    handleActiveCourseParticipation(dbconn, memberId);
+
+    // Delete member
+    String deleteSql = "DELETE FROM Member WHERE id = ?";
+    PreparedStatement pstmt = dbconn.prepareStatement(deleteSql);
+    pstmt.setInt(1, memberId);
+
+    int rowsAffected = pstmt.executeUpdate();
+    if (rowsAffected > 0) {
+        System.out.println("Member deleted successfully.");
+    } else {
+        System.out.println("Error: Member could not be deleted.");
+    }
+
+    pstmt.close();
 }
 
+private static void handleUnreturnedEquipment(Connection dbconn, int memberId) throws SQLException {
+    String query = "SELECT equipmentName FROM Borrow WHERE memberId = ? AND returnTime IS NULL";
+    PreparedStatement pstmt = dbconn.prepareStatement(query);
+    pstmt.setInt(1, memberId);
+    ResultSet rs = pstmt.executeQuery();
 
+    while (rs.next()) {
+        String equipmentName = rs.getString("equipmentName");
+        // Mark equipment as lost and update available quantity
+        String updateSql = "UPDATE Equipment SET available = available - 1 WHERE name = ?";
+        PreparedStatement updateStmt = dbconn.prepareStatement(updateSql);
+        updateStmt.setString(1, equipmentName);
+        updateStmt.executeUpdate();
+        updateStmt.close();
 
-    // Add a new method for record deletion
-    private static void deleteMember(Statement stmt) throws SQLException {
-        // Implement logic to delete a member, considering checks for unreturned
-        // equipment,
-        // unpaid balances, and active course participation
-        // Make sure to handle any exceptions that may occur during the deletion process
+        System.out.println("Equipment " + equipmentName + " marked as lost for member " + memberId);
     }
+
+    pstmt.close();
+}
+
+private static boolean hasUnpaidBalances(Connection dbconn, int memberId) throws SQLException {
+    String query = "SELECT COUNT(*) FROM Transaction WHERE memberID = ? AND transactionStatus = 'DUE'";
+    PreparedStatement pstmt = dbconn.prepareStatement(query);
+    pstmt.setInt(1, memberId);
+    ResultSet rs = pstmt.executeQuery();
+
+    boolean hasUnpaid = rs.next() && rs.getInt(1) > 0;
+    pstmt.close();
+    return hasUnpaid;
+}
+
+private static void printUnpaidBalances(Connection dbconn, int memberId) throws SQLException {
+    String query = "SELECT id, amount FROM Transaction WHERE memberID = ? AND transactionStatus = 'DUE'";
+    PreparedStatement pstmt = dbconn.prepareStatement(query);
+    pstmt.setInt(1, memberId);
+    ResultSet rs = pstmt.executeQuery();
+
+    System.out.println("Unpaid Balances:");
+    while (rs.next()) {
+        int transactionId = rs.getInt("id");
+        double amount = rs.getDouble("amount");
+        System.out.printf("Transaction ID: %d, Amount Due: %.2f\n", transactionId, amount);
+    }
+
+    pstmt.close();
+}
+
+private static void handleActiveCourseParticipation(Connection dbconn, int memberId) throws SQLException {
+    String query = "SELECT packageName FROM PackageMembers WHERE memberId = ?";
+    PreparedStatement pstmt = dbconn.prepareStatement(query);
+    pstmt.setInt(1, memberId);
+    ResultSet rs = pstmt.executeQuery();
+
+    while (rs.next()) {
+        String packageName = rs.getString("packageName");
+        // Update course participant numbers
+        updateCourseParticipantsOnMemberDeletion(dbconn, packageName);
+        // Delete package member record
+        deletePackageMemberRecord(dbconn, packageName, memberId);
+    }
+
+    pstmt.close();
+}
+
+private static void updateCourseParticipantsOnMemberDeletion(Connection dbconn, String packageName) throws SQLException {
+    String courseQuery = "SELECT courseName FROM PackageCourse WHERE packageName = ?";
+    PreparedStatement courseStmt = dbconn.prepareStatement(courseQuery);
+    courseStmt.setString(1, packageName);
+    ResultSet courseRs = courseStmt.executeQuery();
+
+    while (courseRs.next()) {
+        String courseName = courseRs.getString("courseName");
+        String updateSql = "UPDATE Course SET currentParticipants = currentParticipants - 1 WHERE name = ?";
+        PreparedStatement updateStmt = dbconn.prepareStatement(updateSql);
+        updateStmt.setString(1, courseName);
+        updateStmt.executeUpdate();
+        updateStmt.close();
+    }
+
+    courseStmt.close();
+}
+
+private static void deletePackageMemberRecord(Connection dbconn, String packageName, int memberId) throws SQLException {
+    String deleteSql = "DELETE FROM PackageMembers WHERE packageName = ? AND memberId = ?";
+    PreparedStatement pstmt = dbconn.prepareStatement(deleteSql);
+    pstmt.setString(1, packageName);
+    pstmt.setInt(2, memberId);
+    pstmt.executeUpdate();
+    pstmt.close();
+}
+
 
     // Add a new method for course insertion
     private static void insertCourse(Statement stmt) throws SQLException {
