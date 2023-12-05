@@ -131,6 +131,7 @@ public class Prog4 {
 
     private static int getNextAction(Scanner user) {
         System.out.println("╔═════════════════════════════════════════════════════════════╗");
+        System.out.println("║   0. Go to next menu                                        ║");
         System.out.println("║   1. Insert a new member                                    ║");
         System.out.println("║   2. Delete a member                                        ║");
         System.out.println("║   3. Insert a new course                                    ║");
