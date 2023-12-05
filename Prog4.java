@@ -968,8 +968,17 @@ private static void deletePackageMemberRecord(Connection dbconn, String packageN
 
     /**
      * Query 4: Your additional non-trivial query.
+     * SHOW THE NAMES OF ALL MEMBERS THAT HAVE BORROWED AN EQUIPMENT
+     * THAT IS NO LONGER AVAILABLE TO BE BORROWED.
      */
     private static void customQuery(Statement stmt, String userProvidedInfo) throws SQLException {
+        String query = "Select id, name, phone from MEMBER" +
+                " JOIN BORROW on member.id = borrow.memberid " +
+                " JOIN EQUIPMENT on on borrow.name = equipment.name" + 
+                " WHERE equipment.available = 0 ";
+        
+        ResultSet rs = stmt.executeQuery(query);
+            
     }
 
 }
