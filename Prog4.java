@@ -702,7 +702,7 @@ private static void deletePackageMemberRecord(Connection dbconn, String packageN
         // Implement logic to add, update, or delete a course package
         // Make sure to handle any exceptions that may occur during the process
         Scanner sc = new Scanner(System.in);
-        Systen.out.println(" OPERATION SELECTION: TYPE insert / update / delete");
+        System.out.println(" OPERATION SELECTION: TYPE insert / update / delete");
         String operation = sc.nextLine();
         if (operation == "insert"){
             System.out.println("Enter the name of the package course to add: ");
