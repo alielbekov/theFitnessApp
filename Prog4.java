@@ -155,12 +155,76 @@ public class Prog4 {
         // Make sure to handle any exceptions that may occur during the deletion process
     }
 
-    // Add a new method for course insertion
+        // Add a new method for course insertion
     private static void insertCourse(Statement stmt) throws SQLException {
         // Implement logic to get course information from the user and insert it into
         // the database
         // Make sure to handle any exceptions that may occur during the insertion
         // process
+        Scanner sc = new Scanner(System.in);
+        String query = buildQuery();
+
+        System.out.print("\nAre you sure to add a new course? [y/n]:\t");
+        String input = sc.next();
+        if (input.equals("y") || input.equals("Y")) {
+            ResultSet response = stmt.executeQuery(query);
+            if (response != null) {
+                System.out.println("New course added successfully!");
+            }
+        }
+
+    }
+
+    private static String buildQuery() {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter course name:\t");
+        String courseName = sc.nextLine();
+        System.out.println();
+
+        System.out.print("Enter trainer id:\t");
+        int trainerID = sc.nextInt();
+        System.out.println();
+
+        System.out.print("Enter weekly class day (monday/tuesday...):\t");
+        String weeklyClass = sc.next();
+        System.out.println();
+
+        System.out.print("Enter start date (MM/DD/YYYY):\t");
+        String startDate = sc.next();
+        System.out.println();
+
+        System.out.print("Enter end date (MM/DD/YYYY):\t");
+        String endDate = sc.next();
+        System.out.println();
+
+        System.out.print("Enter start time (0, 1200, or 1420):\t");
+        String startTime = sc.next();
+        System.out.println();
+
+        System.out.print("Enter end time (0, 1200, or 1420):\t");
+        String endTime = sc.next();
+        System.out.println();
+
+        int currParticipants = 0;
+
+        System.out.print("Enter max participants:\t");
+        int maxParticipants = sc.nextInt();
+        System.out.println();
+
+        String query = "insert into course values (" +
+                "\'" + courseName + "\', " +
+                trainerID + ", " +
+                "\'" + weeklyClass + "\', " +
+                "to_date('" + startDate + "\'," + "\'MM/DD/YYYY\'), " +
+                "to_date('" + endDate + "\'," + "\'MM/DD/YYYY\'), " +
+                startTime + ", " +
+                endTime + ", " +
+                currParticipants + ", " +
+                maxParticipants + ")";
+        System.out.println(query);
+
+        return query;
     }
 
     // Add a new method for course deletion
@@ -168,8 +232,70 @@ public class Prog4 {
         // Implement logic to delete a course, considering enrolled members
         // Notify members before deletion and handle any exceptions that may occur
         // during the process
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter a course name to delete (Yoga 001, Strength 002):\t");
+        String course = sc.nextLine();
+        Map<String, String> members = getMembers(course, stmt);
+        System.out.println("Memeber who need to be notified:");
+        System.out.println("══════════════════════════════════════════════════════");
+        for (String member : members.keySet()) {
+            System.out.println(member + ": " + members.get(member));
+        }
+        System.out.println("══════════════════════════════════════════════════════");
+
+        System.out.print("Continue? [y/n]:\t");
+        String input = sc.next();
+        if (input.equals("y") || input.equals("Y")) {
+            System.out.println("\nDeleting " + "\'" + course + "\'");
+            deleteCourse(stmt, course);
+            System.out.println("\'" + course + "\'" + " deleted successfully!");
+        }
+
     }
 
+    private static Map<String, String> getMembers(String course, Statement stmt) throws SQLException {
+        Map<String, String> namePhoneMap = new HashMap<>();
+        String query = "SELECT name, phone " +
+                "FROM member " +
+                "WHERE id IN (SELECT memberid " +
+                "FROM PackageMembers " +
+                "WHERE packageName IN (SELECT packagename " +
+                "FROM packagecourse " +
+                "WHERE coursename = \'" + course + "\'))";
+        // System.out.println(query);
+        ResultSet result = stmt.executeQuery(query);
+        if (result != null) {
+            while (result.next()) {
+                String name = result.getString("name");
+                String phone = result.getString("phone");
+                namePhoneMap.put(name, phone);
+            }
+
+        }
+
+        return namePhoneMap;
+    }
+
+    private static void deleteCourse(Statement stmt, String course) {
+        String query1 = "DELETE FROM PackageCourse WHERE courseName = \'" + course + "\'";
+        // System.out.println(query1);
+        try {
+            stmt.executeQuery(query1);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        String query2 = "DELETE FROM Course WHERE name = \'" + course + "\'";
+        // System.out.println(query2);
+        try {
+            stmt.executeQuery(query2);
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+    }
+    
     // Add a new method for course package insertion/update/deletion
     private static void manageCoursePackage(Statement stmt) throws SQLException {
         // Implement logic to add, update, or delete a course package
@@ -183,6 +309,27 @@ public class Prog4 {
         // List all members’ names and phone numbers who now have a negative balance
         // (that is, have fees that
         // are not paid off).
+        String query = "SELECT name, phone " +
+                "FROM member " +
+                "WHERE id IN (SELECT memberId " +
+                "FROM transaction " +
+                "WHERE transactionStatus = 'DUE' and CURRENT_DATE >= transactionDate)";
+        // System.out.println(query);
+        ResultSet resultSet = stmt.executeQuery(query);
+        if (resultSet != null) {
+            System.out.println("THE RESULTS FOR [Members with Negative Balance]:");
+            System.out.println("╔═══════════════════════════════════════════════════════════");
+
+            System.out.println("║ Name" + "\t\t║ " + "Phone number");
+            System.out.println("║═══════════════════════════════════════════════════════════");
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String phone = resultSet.getString("phone");
+                System.out.println("║ " + name + "\t║ " + phone);
+            }
+            System.out.println("╚═══════════════════════════════════════════════════════════");
+
+        }
     }
 
     private static String militaryTimeToRegularTime(int militaryTime) {
