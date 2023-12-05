@@ -1,3 +1,6 @@
+import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.DriverManager;
@@ -9,6 +12,7 @@ import java.util.Map;
 import java.util.Calendar;
 import java.util.Scanner;
 import java.util.TimeZone;
+
 
 public class Prog4 {
     private static final String postgresURL = "jdbc:postgresql://localhost:5432/eddie";
@@ -25,13 +29,14 @@ public class Prog4 {
             }
         }
 
-        String username = null; // Oracle DBMS username
-        String password = null; // Oracle DBMS password
+        String username = System.getenv("db_username");
+        String password = System.getenv("db_password");
+
 
         if (!usePostgresURL && args.length == 2) {
             username = args[0];
             password = args[1];
-        } else if (!usePostgresURL) {
+        } else if (!usePostgresURL && username.length()<1) {
             System.out.println("\nUsage:  java Main <username> <password>\n"
                     + "    where <username> is your Oracle DBMS"
                     + " username,\n    and <password> is your Oracle"
@@ -55,55 +60,61 @@ public class Prog4 {
 
         Scanner user = new Scanner(System.in);
 
-        Statement stmt;
-        try {
-            stmt = dbconn.createStatement();
-            // dbconn.setAutoCommit(false);
-            // answer = stmt.executeQuery(query);
+        boolean exit = false;
+        try{
+            while (!exit) {
+                Statement stmt = dbconn.createStatement();
+                int choice = getNextAction(user);
 
-            int choice = getNextAction(user);
-            // Get user input from getNextAction()
-            switch (choice) {
-                case 1:
-                    insertMember(dbconn);
-                    break;
-                case 2:
-                    deleteMember(dbconn);
-                    break;
-                case 3:
-                    insertCourse(stmt);
-                    break;
-                case 4:
-                    deleteCourse(stmt);
-                    break;
-                case 5:
-                    manageCoursePackage(stmt);
-                    break;
-                case 6:
-                    break;
+                switch (choice) {
+                    case 1:
+                        insertMember(dbconn);
+                        break;
+                    case 2:
+                        deleteMember(dbconn);
+                        break;
+                    case 3:
+                        insertCourse(stmt);
+                        break;
+                    case 4:
+                        deleteCourse(stmt);
+                        break;
+                    case 5:
+                        manageCoursePackage(stmt);
+                        break;
+                    case 6:
+                        exit = true; // Exit the program
+                        break;
+                    case 0:
+                        // Go back to main menu (do nothing, loop will continue)
+                        break;
+                }
+
+                if (!exit) {
+                    int queryId = getNextQuery(user);
+                    switch (queryId) {
+                        case 1:
+                            getMembersNegBalance(stmt);
+                            break;
+                        case 2:
+                            getMemberScheduleNov(stmt, user);
+                            break;
+                        case 3:
+                            getTrainersScheduleDec(stmt, user);
+                            break;
+                        case 4:
+                            // TODO:
+                            break;
+                        case 0:
+                            // Go back to main menu (do nothing, loop will continue)
+                            break;
+                    }
+                }
+                stmt.close();
 
             }
-
-            // The queries that the application is to be able to answer:
-            int queryId = getNextQuery(user);
-            switch (queryId) {
-                case 1:
-                    getMembersNegBalance(stmt);
-                    break;
-                case 2:
-                    getMemberScheduleNov(stmt, user);
-                    break;
-                case 3:
-                    getTrainersScheduleDec(stmt, user);
-                    break;
-                case 4:
-                    // TODO:
-                    break;
-            }
-
             // Shut down the connection to the DBMS.
             user.close();
-            stmt.close();
             dbconn.close();
 
         } catch (SQLException e) {
@@ -137,6 +148,7 @@ public class Prog4 {
         System.out.println("║   2. Get a Member's schedule for November                   ║");
         System.out.println("║   3. Get all Trainers' schedule for December                ║");
         System.out.println("║   4. Optional Query                                         ║");
+        System.out.println("║   0. Go Back                                                ║");
         System.out.println("╚═════════════════════════════════════════════════════════════╝");
         String input = user.nextLine();
         return Integer.parseInt(input);
@@ -707,16 +719,16 @@ private static void deletePackageMemberRecord(Connection dbconn, String packageN
         ResultSet resultSet = stmt.executeQuery(query);
         if (resultSet != null) {
             System.out.println("THE RESULTS FOR [Members with Negative Balance]:");
-            System.out.println("╔═══════════════════════════════════════════════════════════");
-
-            System.out.println("║ Name" + "\t\t║ " + "Phone number");
-            System.out.println("║═══════════════════════════════════════════════════════════");
+            System.out.println("╔════════════════════════════════════════════════════════════╗");
+            System.out.println("║ Name" + "\t\t║ " + "Phone number \t                             ║");
+            System.out.println("║════════════════════════════════════════════════════════════║");
+                              
             while (resultSet.next()) {
                 String name = resultSet.getString("name");
                 String phone = resultSet.getString("phone");
                 System.out.println("║ " + name + "\t║ " + phone);
             }
-            System.out.println("╚═══════════════════════════════════════════════════════════");
+            System.out.println("╚═════════════════════════════════════════════════════════════╝");;
 
         }
     }
