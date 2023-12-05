@@ -39,21 +39,25 @@ insert into member values (15, 'Leland Wilcox', '(543)754-5555', 'Regular', 0);
 insert into transaction values (1, (select id from member where name = 'Christine Ballard'), (select price from package where name = 'Strength'), CURRENT_DATE, 'FINISHED', 'CARD');
 insert into packagemembers values ('Strength', (select id from member where name = 'Christine Ballard'));
 update member set totalspending = totalspending + (select price from package where name = 'Strength') where name = 'Christine Ballard';
+update course set currentparticipants = currentparticipants + 1 where name in (select coursename from packagecourse where packagename = 'Strength');
 
 -- Caiden buys the junior package with straight cash.
 insert into transaction values (2, (select id from member where name = 'Caiden Beard'), (select price from package where name = 'Junior'), CURRENT_DATE, 'FINISHED', 'CASH');
 insert into packagemembers values ('Junior', (select id from member where name = 'Caiden Beard'));
 update member set totalspending = totalspending + (select price from package where name = 'Junior') where name = 'Caiden Beard';
+update course set currentparticipants = currentparticipants + 1 where name in (select coursename from packagecourse where packagename = 'Junior');
 
 -- Julian buys the senior package with straight cash.
 insert into transaction values (3, (select id from member where name = 'Julian Webster'), (select price from package where name = 'Senior'), CURRENT_DATE, 'FINISHED', 'CASH');
 insert into packagemembers values ('Senior', (select id from member where name = 'Julian Webster'));
 update member set totalspending = totalspending + (select price from package where name = 'Senior') where name = 'Julian Webster';
+update course set currentparticipants = currentparticipants + 1 where name in (select coursename from packagecourse where packagename = 'Senior');
 
 -- Alyssa buys the strength package with a check.
 insert into transaction values (4, (select id from member where name = 'Alyssa Salas'), (select price from package where name = 'Strength'), CURRENT_DATE, 'FINISHED', 'CHECK');
 insert into packagemembers values ('Strength', (select id from member where name = 'Alyssa Salas'));
 update member set totalspending = totalspending + (select price from package where name = 'Strength') where name = 'Alyssa Salas';
+update course set currentparticipants = currentparticipants + 1 where name in (select coursename from packagecourse where packagename = 'Strength');
 
 -- Borrows
 -- Alana borrows a yoga mat for 1 day.
