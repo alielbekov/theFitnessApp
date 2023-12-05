@@ -722,13 +722,15 @@ public class Prog4 {
                     packageName + "\'";
             stmt.executeUpdate(delete_query);
         }
-        if (operation.equals("update") {
+        if (operation.equals("update")) {
             System.out.println("What is the name of the package you want to update?");
             String packageName = sc.nextLine();
+            System.out.println("What is the name of the course you want to update?");
+            String oldCourse = sc.nextLine();
             System.out.println("What new course would you like in the course package?");
             String newCourse = sc.nextLine();
             String update_query = "UPDATE packagecourse SET coursename = \'" +
-                    newCourse + "\' where packagename = \'" + packageName + "\'";
+                    newCourse + "\' where packagename = \'" + packageName + "\' and courseName = '" + oldCourse + "'";
             stmt.executeUpdate(update_query);
         }
     }
