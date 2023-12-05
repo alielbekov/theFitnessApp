@@ -994,7 +994,7 @@ private static void deletePackageMemberRecord(Connection dbconn, String packageN
     private static void customQuery(Statement stmt) throws SQLException {
         String query = "Select id, name, phone from MEMBER" +
                 " JOIN BORROW on member.id = borrow.memberid " +
-                " JOIN EQUIPMENT on on borrow.name = equipment.name" + 
+                " JOIN EQUIPMENT on borrow.equipmentname = equipment.name" + 
                 " WHERE equipment.available = 0 ";
         
         ResultSet rs = stmt.executeQuery(query);
