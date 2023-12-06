@@ -858,6 +858,12 @@ public class Prog4 {
         }
     }
 
+    /**
+     * Converts an integer representing time in military format to a string in regular format.
+     *
+     * @param militaryTime The integer representing time in military format
+     * @return A time string in regular format, or null if militaryTime is invalid.
+     */
     private static String militaryTimeToRegularTime(int militaryTime) {
         if (militaryTime < 0) {
             militaryTime *= -1;
@@ -881,6 +887,12 @@ public class Prog4 {
         return hours + ":" + String.format("%02d", minutes) + suffix;
     }
 
+    /**
+     * Converts a string representing a day of the week to java's calender representations.
+     *
+     * @param dayOfTheWeek String representing a day of the week from the database.
+     * @return Integer representing a day of the week in java's calender.
+     */
     private static int dayOfTheWeekIndex(String dayOfTheWeek) {
         return switch (dayOfTheWeek) {
             case "sunday" -> Calendar.SUNDAY;
@@ -894,6 +906,12 @@ public class Prog4 {
         };
     }
 
+    /**
+     * Converts a calender date to a string.
+     *
+     * @param cal Calender set to the date desired.
+     * @return A string representing the date that the calender is set to.
+     */
     private static String dateToString(Calendar cal) {
         String dayOfWeek = switch (cal.get(Calendar.DAY_OF_WEEK)) {
             case Calendar.SUNDAY -> "Sun";
@@ -927,18 +945,23 @@ public class Prog4 {
 
     /**
      * Query 2: Check and see a member’s class schedule for November.
+     *
+     * @param stmt The statement form the database connection.
+     * @param user The scanner for user input
      */
     private static void getMemberScheduleNov(Statement stmt, Scanner user) throws SQLException {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("America/Phoenix"));
         System.out.print("Name of the member: ");
-        String memberName = user.nextLine();
+        String memberName = user.nextLine(); // Get the name of the member for the query.
 
+        // Execute query
         ResultSet rs = stmt.executeQuery(
                 "select Course.name, weeklyclasstime, starttime, endtime, startdate, enddate from course " +
                         "join packagecourse on course.name = packagecourse.coursename " +
                         "join packagemembers on packagecourse.packagename = packagemembers.packagename " +
                         "join member on packagemembers.memberid = member.id and member.name = '" + memberName + "'");
 
+        // Iterate through the result set.
         while (rs.next()) {
             String courseName = rs.getString(1);
             int weeklyClassTime = dayOfTheWeekIndex(rs.getString(2));
@@ -947,10 +970,12 @@ public class Prog4 {
             Date startDate = rs.getDate(5, cal);
             Date endDate = rs.getDate(6, cal);
 
+            // Check if weeklyClassTime is invalid.
             if (weeklyClassTime == -1) {
                 continue; // fixme: invalid data, maybe throw exception.
             }
 
+            // Calculate the first and last november from the start and end date of the course.
             Date novemberStart;
             Date novemberEnd;
 
@@ -984,6 +1009,9 @@ public class Prog4 {
 
             System.out.println(courseName + ": ");
             java.util.Date currentDate = novemberStart;
+
+            // Iterate through the dates between start and end date printing the dates that the class from the database
+            // meets. The loop skips over non-november dates.
             while (novemberEnd.after(currentDate) || novemberEnd.equals(currentDate)) {
                 cal.setTime(currentDate);
 
@@ -1011,16 +1039,21 @@ public class Prog4 {
 
     /**
      * Query 3: Check and see all trainers’ working hours for December.
+     *
+     * @param stmt The statement form the database connection.
+     * @param user The scanner for user input
      */
     private static void getTrainersScheduleDec(Statement stmt, Scanner user) throws SQLException {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("America/Phoenix"));
         System.out.print("Name of the trainer: ");
-        String trainerName = user.nextLine();
+        String trainerName = user.nextLine(); // Get the name of the member for the query.
 
+        // Execute query
         ResultSet rs = stmt.executeQuery(
                 "select Course.name, weeklyclasstime, starttime, endtime, startdate, enddate from course " +
                         "join trainer on trainerid = trainer.id and trainer.name = '" + trainerName + "'");
 
+        // Iterate through the result set.
         while (rs.next()) {
             String courseName = rs.getString(1);
             int weeklyClassTime = dayOfTheWeekIndex(rs.getString(2));
@@ -1033,6 +1066,7 @@ public class Prog4 {
                 continue; // fixme: invalid data, maybe throw exception.
             }
 
+            // Calculate the first and last december from the start and end date of the course.
             Date novemberStart;
             Date novemberEnd;
 
@@ -1066,6 +1100,9 @@ public class Prog4 {
 
             System.out.println(courseName + ": ");
             java.util.Date currentDate = novemberStart;
+
+            // Iterate through the dates between start and end date printing the dates that the class from the database
+            // meets. The loop skips over non-november dates.
             while (novemberEnd.after(currentDate) || novemberEnd.equals(currentDate)) {
                 cal.setTime(currentDate);
 
