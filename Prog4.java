@@ -1,12 +1,17 @@
 
 /**
- * Authors: Otabek Abduraimov
+ * Authors: 
+ *      Ali Elbekov
+ *      Aman Bhaia
+ *      Eduardo Esau Ibarra
+ *      Otabek Abduraimov
  *          
  * Class: CSC460 - Database Design
  * Instrcutor: Dr. McCann
  * Program: Prog4.java
  * 
- * Description:     This program lets user interact with a database for a fitness center. 
+ * Description:     This program lets user interact with a 
+ *              database for a fitness center. 
  *                  It allows users to:
  *                          insert a record
  *                          delete a record
@@ -187,7 +192,6 @@ public class Prog4 {
      * @Description: Adds a new member to the database
      *               Throws an exception if the query is invalid
      */
-
     private static void insertMember(Connection dbconn) throws SQLException {
         Scanner sc = new Scanner(System.in);
 
@@ -224,8 +228,12 @@ public class Prog4 {
     }
 
     /**
-     * @Method: displayPackagesWithCourses(Connection dbconn, int memberId)
-     * @Description:
+     * Displays available packages with courses, allowing the user to select and
+     * link a package to a member.
+     *
+     * @param dbconn   The database connection.
+     * @param memberId The ID of the member.
+     * @throws SQLException If a database access error occurs.
      */
     private static void displayPackagesWithCourses(Connection dbconn, int memberId) throws SQLException {
         String packageQuery = "SELECT name, price FROM Package ORDER BY name";
@@ -251,8 +259,12 @@ public class Prog4 {
     }
 
     /**
-     * @Method: areCoursesAvailable(Connection dbconn, String packageName)
-     * @Description:
+     * Checks if there are available slots in courses for a given package.
+     *
+     * @param dbconn      The database connection.
+     * @param packageName The name of the package.
+     * @return True if courses are available; false otherwise.
+     * @throws SQLException If a database access error occurs.
      */
     private static boolean areCoursesAvailable(Connection dbconn, String packageName) throws SQLException {
         String courseQuery = "SELECT c.maxParticipants, c.currentParticipants " +
@@ -276,8 +288,11 @@ public class Prog4 {
     }
 
     /**
-     * @Method: displayCoursesForPackage(Connection dbconn, String packageName)
-     * @Description:
+     * Displays the courses included in a given package.
+     *
+     * @param dbconn      The database connection.
+     * @param packageName The name of the package.
+     * @throws SQLException If a database access error occurs.
      */
     private static void displayCoursesForPackage(Connection dbconn, String packageName) throws SQLException {
         String courseQuery = "SELECT c.name, c.currentParticipants, c.maxParticipants " +
@@ -297,8 +312,10 @@ public class Prog4 {
     }
 
     /**
-     * @Method: printAllMembers(Connection dbconn)
-     * @Description:
+     * Prints information about all members in the database.
+     *
+     * @param dbconn The database connection.
+     * @throws SQLException If a database access error occurs.
      */
     private static void printAllMembers(Connection dbconn) throws SQLException {
         String query = "SELECT * FROM Member";
@@ -321,9 +338,12 @@ public class Prog4 {
     }
 
     /**
-     * @Method: selectAndLinkPackage(Connection dbconn, List<String> packageNames,
-     *          int memberId)
-     * @Description:
+     * Allows the user to select a package and links it to the specified member.
+     *
+     * @param dbconn       The database connection.
+     * @param packageNames The list of available package names.
+     * @param memberId     The ID of the member.
+     * @throws SQLException If a database access error occurs.
      */
     private static void selectAndLinkPackage(Connection dbconn, List<String> packageNames, int memberId)
             throws SQLException {
@@ -344,9 +364,12 @@ public class Prog4 {
     }
 
     /**
-     * @Method: linkMemberToPackage(Connection dbconn, int memberId, String
-     *          packageName)
-     * @Description:
+     * Links a member to a selected package, updating the database accordingly.
+     *
+     * @param dbconn      The database connection.
+     * @param memberId    The ID of the member.
+     * @param packageName The name of the selected package.
+     * @throws SQLException If a database access error occurs.
      */
     private static void linkMemberToPackage(Connection dbconn, int memberId, String packageName) throws SQLException {
         String insertSql = "INSERT INTO PackageMembers (packageName, memberId) VALUES (?, ?)";
@@ -371,8 +394,12 @@ public class Prog4 {
     }
 
     /**
-     * @Method: updateCourseParticipants(Connection dbconn, String packageName)
-     * @Description:
+     * Updates the current participants count in courses associated with a given
+     * package.
+     *
+     * @param dbconn      The database connection.
+     * @param packageName The name of the package.
+     * @throws SQLException If a database access error occurs.
      */
     private static void updateCourseParticipants(Connection dbconn, String packageName) throws SQLException {
         String courseQuery = "SELECT courseName FROM PackageCourse WHERE packageName = ?";
@@ -392,9 +419,12 @@ public class Prog4 {
     }
 
     /**
-     * @Method: addDueTransaction(Connection dbconn, String packageName, int
-     *          memberId)
-     * @Description:
+     * Adds a due transaction for a linked member and package.
+     *
+     * @param dbconn      The database connection.
+     * @param packageName The name of the package.
+     * @param memberId    The ID of the member.
+     * @throws SQLException If a database access error occurs.
      */
     private static void addDueTransaction(Connection dbconn, String packageName, int memberId) throws SQLException {
         // Fetch the package price
@@ -432,8 +462,11 @@ public class Prog4 {
     }
 
     /**
-     * @Method: getNextTransactionId(Connection dbconn)
-     * @Description:
+     * Retrieves the next available transaction ID from the database.
+     *
+     * @param dbconn The database connection.
+     * @return The next available transaction ID.
+     * @throws SQLException If a database access error occurs.
      */
     private static int getNextTransactionId(Connection dbconn) throws SQLException {
         String query = "SELECT MAX(id) FROM Transaction";
@@ -450,8 +483,10 @@ public class Prog4 {
     }
 
     /**
-     * @Method: printAllTransactions(Connection dbconn)
-     * @Description:
+     * Prints information about all transactions in the database.
+     *
+     * @param dbconn The database connection.
+     * @throws SQLException If a database access error occurs.
      */
     private static void printAllTransactions(Connection dbconn) throws SQLException {
         String query = "SELECT * FROM Transaction";
@@ -476,8 +511,10 @@ public class Prog4 {
     }
 
     /**
-     * @Method: printPackageMembers(Connection dbconn)
-     * @Description:
+     * Prints information about package members in the database.
+     *
+     * @param dbconn The database connection.
+     * @throws SQLException If a database access error occurs.
      */
     private static void printPackageMembers(Connection dbconn) throws SQLException {
         String query = "SELECT * FROM PackageMembers";
@@ -496,8 +533,11 @@ public class Prog4 {
     }
 
     /**
-     * @Method: getNextMemberId(Connection dbconn)
-     * @Description:
+     * Retrieves the next available member ID from the database.
+     *
+     * @param dbconn The database connection.
+     * @return The next available member ID.
+     * @throws SQLException If a database access error occurs.
      */
     private static int getNextMemberId(Connection dbconn) throws SQLException {
         String query = "SELECT MAX(id) FROM Member";
@@ -514,8 +554,11 @@ public class Prog4 {
     }
 
     /**
-     * @Method: deleteMember(Connection dbconn)
-     * @Description:
+     * Deletes a member from the database, handling unreturned equipment, unpaid
+     * balances, and active course participation.
+     *
+     * @param dbconn The database connection.
+     * @throws SQLException If a database access error occurs.
      */
     private static void deleteMember(Connection dbconn) throws SQLException {
         Scanner sc = new Scanner(System.in);
@@ -552,8 +595,11 @@ public class Prog4 {
     }
 
     /**
-     * @Method: handleUnreturnedEquipment(Connection dbconn, int memberId)
-     * @Description:
+     * Marks unreturned equipment as lost and updates the available quantity.
+     *
+     * @param dbconn   The database connection.
+     * @param memberId The ID of the member.
+     * @throws SQLException If a database access error occurs.
      */
     private static void handleUnreturnedEquipment(Connection dbconn, int memberId) throws SQLException {
         String query = "SELECT equipmentName FROM Borrow WHERE memberId = ? AND returnTime IS NULL";
@@ -576,6 +622,14 @@ public class Prog4 {
         pstmt.close();
     }
 
+    /**
+     * Checks if a member has unpaid balances.
+     *
+     * @param dbconn   The database connection.
+     * @param memberId The ID of the member.
+     * @return True if the member has unpaid balances; false otherwise.
+     * @throws SQLException If a database access error occurs.
+     */
     private static boolean hasUnpaidBalances(Connection dbconn, int memberId) throws SQLException {
         String query = "SELECT COUNT(*) FROM Transaction WHERE memberID = ? AND transactionStatus = 'DUE'";
         PreparedStatement pstmt = dbconn.prepareStatement(query);
@@ -587,6 +641,13 @@ public class Prog4 {
         return hasUnpaid;
     }
 
+    /**
+     * Prints information about unpaid balances for a specific member.
+     *
+     * @param dbconn   The database connection.
+     * @param memberId The ID of the member.
+     * @throws SQLException If a database access error occurs.
+     */
     private static void printUnpaidBalances(Connection dbconn, int memberId) throws SQLException {
         String query = "SELECT id, amount FROM Transaction WHERE memberID = ? AND transactionStatus = 'DUE'";
         PreparedStatement pstmt = dbconn.prepareStatement(query);
@@ -603,6 +664,14 @@ public class Prog4 {
         pstmt.close();
     }
 
+    /**
+     * Handles active course participation for a member, updating course participant
+     * numbers and deleting package member records.
+     *
+     * @param dbconn   The database connection.
+     * @param memberId The ID of the member.
+     * @throws SQLException If a database access error occurs.
+     */
     private static void handleActiveCourseParticipation(Connection dbconn, int memberId) throws SQLException {
         String query = "SELECT packageName FROM PackageMembers WHERE memberId = ?";
         PreparedStatement pstmt = dbconn.prepareStatement(query);
@@ -620,6 +689,13 @@ public class Prog4 {
         pstmt.close();
     }
 
+    /**
+     * Updates course participant numbers when a member is deleted.
+     *
+     * @param dbconn      The database connection.
+     * @param packageName The name of the package.
+     * @throws SQLException If a database access error occurs.
+     */
     private static void updateCourseParticipantsOnMemberDeletion(Connection dbconn, String packageName)
             throws SQLException {
         String courseQuery = "SELECT courseName FROM PackageCourse WHERE packageName = ?";
@@ -639,6 +715,14 @@ public class Prog4 {
         courseStmt.close();
     }
 
+    /**
+     * Deletes package member records for a specific member and package.
+     *
+     * @param dbconn      The database connection.
+     * @param packageName The name of the package.
+     * @param memberId    The ID of the member.
+     * @throws SQLException If a database access error occurs.
+     */
     private static void deletePackageMemberRecord(Connection dbconn, String packageName, int memberId)
             throws SQLException {
         String deleteSql = "DELETE FROM PackageMembers WHERE packageName = ? AND memberId = ?";
@@ -649,12 +733,13 @@ public class Prog4 {
         pstmt.close();
     }
 
-    // Add a new method for course insertion
+    /**
+     * Inserts a new course into the database.
+     *
+     * @param stmt The SQL statement.
+     * @throws SQLException If a database access error occurs.
+     */
     private static void insertCourse(Statement stmt) throws SQLException {
-        // Implement logic to get course information from the user and insert it into
-        // the database
-        // Make sure to handle any exceptions that may occur during the insertion
-        // process
         Scanner sc = new Scanner(System.in);
         String query = buildQuery();
 
@@ -669,6 +754,12 @@ public class Prog4 {
 
     }
 
+    /**
+     * Builds the SQL query for inserting a new course by
+     * taking details from the user
+     *
+     * @return The constructed SQL query.
+     */
     private static String buildQuery() {
         Scanner sc = new Scanner(System.in);
 
@@ -721,11 +812,14 @@ public class Prog4 {
         return query;
     }
 
-    // Add a new method for course deletion
+    /**
+     * Deletes a course from the database and notifies
+     * current enrolled members.
+     *
+     * @param stmt The SQL statement.
+     * @throws SQLException If a database access error occurs.
+     */
     private static void deleteCourse(Statement stmt) throws SQLException {
-        // Implement logic to delete a course, considering enrolled members
-        // Notify members before deletion and handle any exceptions that may occur
-        // during the process
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter a course name to delete (Yoga 001, Strength 002):\t");
         String course = sc.nextLine();
@@ -741,12 +835,20 @@ public class Prog4 {
         String input = sc.next();
         if (input.equals("y") || input.equals("Y")) {
             System.out.println("\nDeleting " + "\'" + course + "\'");
-            deleteCourse(stmt, course);
+            deleteCourseRecord(stmt, course);
             System.out.println("\'" + course + "\'" + " deleted successfully!");
         }
 
     }
 
+    /**
+     * Retrieves members enrolled in a course for notification.
+     *
+     * @param course The course name.
+     * @param stmt   The SQL statement.
+     * @return A map of member names and their phone numbers.
+     * @throws SQLException If a database access error occurs.
+     */
     private static Map<String, String> getMembers(String course, Statement stmt) throws SQLException {
         Map<String, String> namePhoneMap = new HashMap<>();
         String query = "SELECT name, phone " +
@@ -756,7 +858,6 @@ public class Prog4 {
                 "WHERE packageName IN (SELECT packagename " +
                 "FROM packagecourse " +
                 "WHERE coursename = \'" + course + "\'))";
-        // System.out.println(query);
         ResultSet result = stmt.executeQuery(query);
         if (result != null) {
             while (result.next()) {
@@ -766,13 +867,17 @@ public class Prog4 {
             }
 
         }
-
         return namePhoneMap;
     }
 
-    private static void deleteCourse(Statement stmt, String course) {
+    /**
+     * Deletes a course and related records from the database.
+     *
+     * @param stmt   The SQL statement.
+     * @param course The course name.
+     */
+    private static void deleteCourseRecord(Statement stmt, String course) {
         String query1 = "DELETE FROM PackageCourse WHERE courseName = \'" + course + "\'";
-        // System.out.println(query1);
         try {
             stmt.executeQuery(query1);
         } catch (SQLException e) {
@@ -781,7 +886,6 @@ public class Prog4 {
         }
 
         String query2 = "DELETE FROM Course WHERE name = \'" + course + "\'";
-        // System.out.println(query2);
         try {
             stmt.executeQuery(query2);
         } catch (Exception e) {
@@ -790,10 +894,13 @@ public class Prog4 {
         }
     }
 
-    // Add a new method for course package insertion/update/deletion
+    /**
+     * Manages the insertion, update, or deletion of a course package.
+     *
+     * @param stmt The SQL statement.
+     * @throws SQLException If a database access error occurs.
+     */
     private static void manageCoursePackage(Statement stmt) throws SQLException {
-        // Implement logic to add, update, or delete a course package
-        // Make sure to handle any exceptions that may occur during the process
         Scanner sc = new Scanner(System.in);
         System.out.println(" OPERATION SELECTION: TYPE insert / update / delete");
         String operation = sc.nextLine();
@@ -828,12 +935,14 @@ public class Prog4 {
     }
 
     /**
-     * Query 1: List all members with a negative balance.
+     * Retrieves members with a negative balance and prints their names and phone
+     * numbers.
+     *
+     * @param stmt The SQL statement.
+     * @throws SQLException If a database access error occurs.
      */
     private static void getMembersNegBalance(Statement stmt) throws SQLException {
-        // List all members’ names and phone numbers who now have a negative balance
-        // (that is, have fees that
-        // are not paid off).
+
         String query = "SELECT name, phone " +
                 "FROM member " +
                 "WHERE id IN (SELECT memberId " +
@@ -844,7 +953,7 @@ public class Prog4 {
         if (resultSet != null) {
             System.out.println("THE RESULTS FOR [Members with Negative Balance]:");
             System.out.println("╔════════════════════════════════════════════════════════════╗");
-            System.out.println("║ Name" + "\t\t║ " + "Phone number \t                             ║");
+            System.out.println("║ Name" + "\t\t║ " + "Phone number \t                        ║");
             System.out.println("║════════════════════════════════════════════════════════════║");
 
             while (resultSet.next()) {
@@ -859,7 +968,8 @@ public class Prog4 {
     }
 
     /**
-     * Converts an integer representing time in military format to a string in regular format.
+     * Converts an integer representing time in military format to a string in
+     * regular format.
      *
      * @param militaryTime The integer representing time in military format
      * @return A time string in regular format, or null if militaryTime is invalid.
@@ -888,7 +998,8 @@ public class Prog4 {
     }
 
     /**
-     * Converts a string representing a day of the week to java's calender representations.
+     * Converts a string representing a day of the week to java's calender
+     * representations.
      *
      * @param dayOfTheWeek String representing a day of the week from the database.
      * @return Integer representing a day of the week in java's calender.
@@ -975,7 +1086,8 @@ public class Prog4 {
                 continue; // fixme: invalid data, maybe throw exception.
             }
 
-            // Calculate the first and last november from the start and end date of the course.
+            // Calculate the first and last november from the start and end date of the
+            // course.
             Date novemberStart;
             Date novemberEnd;
 
@@ -1010,7 +1122,8 @@ public class Prog4 {
             System.out.println(courseName + ": ");
             java.util.Date currentDate = novemberStart;
 
-            // Iterate through the dates between start and end date printing the dates that the class from the database
+            // Iterate through the dates between start and end date printing the dates that
+            // the class from the database
             // meets. The loop skips over non-november dates.
             while (novemberEnd.after(currentDate) || novemberEnd.equals(currentDate)) {
                 cal.setTime(currentDate);
@@ -1066,7 +1179,8 @@ public class Prog4 {
                 continue; // fixme: invalid data, maybe throw exception.
             }
 
-            // Calculate the first and last december from the start and end date of the course.
+            // Calculate the first and last december from the start and end date of the
+            // course.
             Date novemberStart;
             Date novemberEnd;
 
@@ -1101,7 +1215,8 @@ public class Prog4 {
             System.out.println(courseName + ": ");
             java.util.Date currentDate = novemberStart;
 
-            // Iterate through the dates between start and end date printing the dates that the class from the database
+            // Iterate through the dates between start and end date printing the dates that
+            // the class from the database
             // meets. The loop skips over non-november dates.
             while (novemberEnd.after(currentDate) || novemberEnd.equals(currentDate)) {
                 cal.setTime(currentDate);
@@ -1129,9 +1244,11 @@ public class Prog4 {
     }
 
     /**
-     * Query 4: Your additional non-trivial query.
-     * SHOW THE NAMES OF ALL MEMBERS THAT HAVE BORROWED AN EQUIPMENT
-     * THAT IS NO LONGER AVAILABLE TO BE BORROWED.
+     * Query 4: Shows the names of all members that have borrowed an equipment
+     * that is no longer available to be borrowed.
+     *
+     * @param dbconn The database connection.
+     * @throws SQLException If a database access error occurs.
      */
     private static void customQuery(Statement stmt) throws SQLException {
         String query = "Select id, member.name, equipment.name, phone from MEMBER" +
