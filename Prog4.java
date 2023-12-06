@@ -1,11 +1,22 @@
+
+/**
+ * Authors: Otabek Abduraimov
+ *          
+ * Class: CSC460 - Database Design
+ * Instrcutor: Dr. McCann
+ * Program: Prog4.java
+ * 
+ * Description:     This program lets user interact with a database for a fitness center. 
+ *                  It allows users to:
+ *                          insert a record
+ *                          delete a record
+ *                          update a record
+ *                          run a few queries
+ */
+
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Connection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +24,37 @@ import java.util.Calendar;
 import java.util.Scanner;
 import java.util.TimeZone;
 
-
+/*+----------------------------------------------------------------------
+ ||
+ ||  Class Prog4 
+ ||
+ ||        Purpose:  Java 16 program that embeddes SQL within a Java
+ ||                  program.
+ ||   Inherist From: None
+ ||         
+ ||      Interfaces: None 
+ ||
+ |+-----------------------------------------------------------------------
+ ||
+ ||      Constants:  oracleURL: "jdbc:oracle:thin:@aloe.cs.arizona.edu:15
+ ||
+ |+-----------------------------------------------------------------------
+ ||
+ ||   Constructors:  Just the default constructor; no arguments.
+ ||
+ ||  Class Methods:  None.
+ ||
+ ||  Inst. Methods:  getNextAction(Scanner user)
+ ||                  insertMember(dbconn);
+ ||                  deleteMember(dbconn);
+ ||                  insertCourse(stmt);
+ ||                  deleteCourse(stmt);
+ ||                  manageCoursePackage(stmt);
+ ||                  getMembersNegBalance(stmt);
+ ||                  getMemberScheduleNov(stmt, user);
+ ||                  getTrainersScheduleDec(stmt, user);
+ ||                  customQuery(stmt);
+ ++-----------------------------------------------------------------------*/
 public class Prog4 {
     private static final String postgresURL = "jdbc:postgresql://localhost:5432/eddie";
     private static final String oracleURL = // Magic lectura -> aloe access spell
@@ -32,11 +73,10 @@ public class Prog4 {
         String username = System.getenv("db_username");
         String password = System.getenv("db_password");
 
-
         if (!usePostgresURL && args.length == 2) {
             username = args[0];
             password = args[1];
-        } else if (!usePostgresURL && username.length()<1) {
+        } else if (!usePostgresURL && username.length() < 1) {
             System.out.println("\nUsage:  java Main <username> <password>\n"
                     + "    where <username> is your Oracle DBMS"
                     + " username,\n    and <password> is your Oracle"
@@ -61,7 +101,7 @@ public class Prog4 {
         Scanner user = new Scanner(System.in);
 
         boolean exit = false;
-        try{
+        try {
             while (!exit) {
                 Statement stmt = dbconn.createStatement();
                 int choice = getNextAction(user);
@@ -83,36 +123,26 @@ public class Prog4 {
                         manageCoursePackage(stmt);
                         break;
                     case 6:
-                        exit = true; // Exit the program
+                        getMembersNegBalance(stmt);
                         break;
-                    case 0:
-                        // Go back to main menu (do nothing, loop will continue)
+                    case 7:
+                        getMemberScheduleNov(stmt, user);
                         break;
-                }
+                    case 8:
+                        getTrainersScheduleDec(stmt, user);
+                        break;
+                    case 9:
+                        customQuery(stmt);
+                        break;
+                    case 10:
+                        exit = true;
+                        break;
 
-                if (!exit) {
-                    int queryId = getNextQuery(user);
-                    switch (queryId) {
-                        case 1:
-                            getMembersNegBalance(stmt);
-                            break;
-                        case 2:
-                            getMemberScheduleNov(stmt, user);
-                            break;
-                        case 3:
-                            getTrainersScheduleDec(stmt, user);
-                            break;
-                        case 4:
-                            customQuery(stmt);
-                            break;
-                        case 0:
-                            // Go back to main menu (do nothing, loop will continue)
-                            break;
-                    }
                 }
                 stmt.close();
 
             }
+
             // Shut down the connection to the DBMS.
             user.close();
             dbconn.close();
@@ -129,42 +159,44 @@ public class Prog4 {
         }
     }
 
+    /**
+     * @Method: getNextAction(Scanner user)
+     * @Description: This method returns the user's choice of next action.
+     */
     private static int getNextAction(Scanner user) {
-        System.out.println("╔═════════════════════════════════════════════════════════════╗");
-        System.out.println("║   0. Go to next menu                                        ║");
-        System.out.println("║   1. Insert a new member                                    ║");
-        System.out.println("║   2. Delete a member                                        ║");
-        System.out.println("║   3. Insert a new course                                    ║");
-        System.out.println("║   4. Delete a course                                        ║");
-        System.out.println("║   5. Manage course packages                                 ║");
-        System.out.println("║   6. Quit the program.                                      ║");
-        System.out.println("╚═════════════════════════════════════════════════════════════╝");
+
+        System.out.println("╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║   1.  Insert a new member                                    ║");
+        System.out.println("║   2.  Delete a member                                        ║");
+        System.out.println("║   3.  Insert a new course                                    ║");
+        System.out.println("║   4.  Delete a course                                        ║");
+        System.out.println("║   5.  Manage course packages                                 ║");
+        System.out.println("║   6.  Get all Members with Negative Balance                  ║");
+        System.out.println("║   7.  Get a Member's schedule for November                   ║");
+        System.out.println("║   8.  Get all Trainers' schedule for December                ║");
+        System.out.println("║   9.  Optional Query                                         ║");
+        System.out.println("║   10. Quit the program.                                      ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
+        System.out.print("CHOOSE ONE OF THE OPTIONS ABOVE TO CONTINUE:\t\t");
         String input = user.nextLine();
         return Integer.parseInt(input);
     }
 
-    private static int getNextQuery(Scanner user) {
-        System.out.println("╔═════════════════════════════════════════════════════════════╗");
-        System.out.println("║   1. Get all Members with Negative Balance                  ║");
-        System.out.println("║   2. Get a Member's schedule for November                   ║");
-        System.out.println("║   3. Get all Trainers' schedule for December                ║");
-        System.out.println("║   4. Optional Query                                         ║");
-        System.out.println("║   0. Go Back                                                ║");
-        System.out.println("╚═════════════════════════════════════════════════════════════╝");
-        String input = user.nextLine();
-        return Integer.parseInt(input);
-    }
+    /**
+     * @Method: insertMember(Connection dbconn)
+     * @Description: Adds a new member to the database
+     *               Throws an exception if the query is invalid
+     */
 
-    // Add a new method for record insertion
-    // Add a new method for record insertion
     private static void insertMember(Connection dbconn) throws SQLException {
         Scanner sc = new Scanner(System.in);
 
         // Prompt for member information
-        System.out.print("Enter member name: ");
+        System.out.println("\nINSERTING A NEW MEMBER...");
+        System.out.print("\nEnter member name:\t");
         String memberName = sc.nextLine();
 
-        System.out.print("Enter member phone number: ");
+        System.out.print("\nEnter member phone number:\t");
         String memberPhone = sc.nextLine();
 
         // Fetch the highest existing member ID and increment it
@@ -181,8 +213,8 @@ public class Prog4 {
         int rowsAffected = pstmt.executeUpdate();
         if (rowsAffected > 0) {
             System.out.println("Member added successfully.");
-            //printAllMembers(dbconn);
-            displayPackagesWithCourses(dbconn,memberId);
+            // printAllMembers(dbconn);
+            displayPackagesWithCourses(dbconn, memberId);
             // Display available packages and handle package selection
         } else {
             System.out.println("Error: Member could not be added.");
@@ -191,6 +223,10 @@ public class Prog4 {
         pstmt.close();
     }
 
+    /**
+     * @Method: displayPackagesWithCourses(Connection dbconn, int memberId)
+     * @Description:
+     */
     private static void displayPackagesWithCourses(Connection dbconn, int memberId) throws SQLException {
         String packageQuery = "SELECT name, price FROM Package ORDER BY name";
         Statement packageStmt = dbconn.createStatement();
@@ -213,6 +249,11 @@ public class Prog4 {
         packageStmt.close();
         selectAndLinkPackage(dbconn, packageNames, memberId);
     }
+
+    /**
+     * @Method: areCoursesAvailable(Connection dbconn, String packageName)
+     * @Description:
+     */
     private static boolean areCoursesAvailable(Connection dbconn, String packageName) throws SQLException {
         String courseQuery = "SELECT c.maxParticipants, c.currentParticipants " +
                 "FROM Course c JOIN PackageCourse pc ON c.name = pc.courseName " +
@@ -234,6 +275,10 @@ public class Prog4 {
         return true; // All courses in the package have available space
     }
 
+    /**
+     * @Method: displayCoursesForPackage(Connection dbconn, String packageName)
+     * @Description:
+     */
     private static void displayCoursesForPackage(Connection dbconn, String packageName) throws SQLException {
         String courseQuery = "SELECT c.name, c.currentParticipants, c.maxParticipants " +
                 "FROM Course c JOIN PackageCourse pc ON c.name = pc.courseName " +
@@ -251,6 +296,10 @@ public class Prog4 {
         courseStmt.close();
     }
 
+    /**
+     * @Method: printAllMembers(Connection dbconn)
+     * @Description:
+     */
     private static void printAllMembers(Connection dbconn) throws SQLException {
         String query = "SELECT * FROM Member";
         Statement stmt = dbconn.createStatement();
@@ -271,7 +320,13 @@ public class Prog4 {
         stmt.close();
     }
 
-    private static void selectAndLinkPackage(Connection dbconn, List<String> packageNames, int memberId) throws SQLException {
+    /**
+     * @Method: selectAndLinkPackage(Connection dbconn, List<String> packageNames,
+     *          int memberId)
+     * @Description:
+     */
+    private static void selectAndLinkPackage(Connection dbconn, List<String> packageNames, int memberId)
+            throws SQLException {
         Scanner sc = new Scanner(System.in);
         System.out.print("Select a package number: ");
         int choice = sc.nextInt();
@@ -288,8 +343,11 @@ public class Prog4 {
         linkMemberToPackage(dbconn, memberId, selectedPackageName);
     }
 
-
-
+    /**
+     * @Method: linkMemberToPackage(Connection dbconn, int memberId, String
+     *          packageName)
+     * @Description:
+     */
     private static void linkMemberToPackage(Connection dbconn, int memberId, String packageName) throws SQLException {
         String insertSql = "INSERT INTO PackageMembers (packageName, memberId) VALUES (?, ?)";
         PreparedStatement pstmt = dbconn.prepareStatement(insertSql);
@@ -302,10 +360,8 @@ public class Prog4 {
             System.out.println("Member successfully linked to package " + packageName + ".");
             printPackageMembers(dbconn);
             updateCourseParticipants(dbconn, packageName);
-            addDueTransaction(dbconn, packageName, memberId );
+            addDueTransaction(dbconn, packageName, memberId);
             printAllTransactions(dbconn);
-
-
 
         } else {
             System.out.println("Error: Could not link member to package.");
@@ -313,6 +369,11 @@ public class Prog4 {
 
         pstmt.close();
     }
+
+    /**
+     * @Method: updateCourseParticipants(Connection dbconn, String packageName)
+     * @Description:
+     */
     private static void updateCourseParticipants(Connection dbconn, String packageName) throws SQLException {
         String courseQuery = "SELECT courseName FROM PackageCourse WHERE packageName = ?";
         PreparedStatement courseStmt = dbconn.prepareStatement(courseQuery);
@@ -329,7 +390,13 @@ public class Prog4 {
         }
         courseStmt.close();
     }
-    private static void addDueTransaction(Connection dbconn,  String packageName, int memberId) throws SQLException {
+
+    /**
+     * @Method: addDueTransaction(Connection dbconn, String packageName, int
+     *          memberId)
+     * @Description:
+     */
+    private static void addDueTransaction(Connection dbconn, String packageName, int memberId) throws SQLException {
         // Fetch the package price
         String priceQuery = "SELECT price FROM Package WHERE name = ?";
         PreparedStatement priceStmt = dbconn.prepareStatement(priceQuery);
@@ -364,7 +431,10 @@ public class Prog4 {
         insertStmt.close();
     }
 
-
+    /**
+     * @Method: getNextTransactionId(Connection dbconn)
+     * @Description:
+     */
     private static int getNextTransactionId(Connection dbconn) throws SQLException {
         String query = "SELECT MAX(id) FROM Transaction";
         Statement stmt = dbconn.createStatement();
@@ -378,6 +448,11 @@ public class Prog4 {
         stmt.close();
         return nextId;
     }
+
+    /**
+     * @Method: printAllTransactions(Connection dbconn)
+     * @Description:
+     */
     private static void printAllTransactions(Connection dbconn) throws SQLException {
         String query = "SELECT * FROM Transaction";
         Statement stmt = dbconn.createStatement();
@@ -393,12 +468,17 @@ public class Prog4 {
             String status = rs.getString("transactionStatus");
             String type = rs.getString("transactionType");
 
-            System.out.printf("%d\t%d\t\t%.2f\t\t%s\t\t%s\t\t%s\n", id, memberId, amount, transactionDate, status, type);
+            System.out.printf("%d\t%d\t\t%.2f\t\t%s\t\t%s\t\t%s\n", id, memberId, amount, transactionDate, status,
+                    type);
         }
 
         stmt.close();
     }
 
+    /**
+     * @Method: printPackageMembers(Connection dbconn)
+     * @Description:
+     */
     private static void printPackageMembers(Connection dbconn) throws SQLException {
         String query = "SELECT * FROM PackageMembers";
         Statement stmt = dbconn.createStatement();
@@ -415,7 +495,10 @@ public class Prog4 {
         stmt.close();
     }
 
-
+    /**
+     * @Method: getNextMemberId(Connection dbconn)
+     * @Description:
+     */
     private static int getNextMemberId(Connection dbconn) throws SQLException {
         String query = "SELECT MAX(id) FROM Member";
         Statement stmt = dbconn.createStatement();
@@ -430,7 +513,10 @@ public class Prog4 {
         return nextId;
     }
 
-
+    /**
+     * @Method: deleteMember(Connection dbconn)
+     * @Description:
+     */
     private static void deleteMember(Connection dbconn) throws SQLException {
         Scanner sc = new Scanner(System.in);
         printAllMembers(dbconn);
@@ -465,6 +551,10 @@ public class Prog4 {
         pstmt.close();
     }
 
+    /**
+     * @Method: handleUnreturnedEquipment(Connection dbconn, int memberId)
+     * @Description:
+     */
     private static void handleUnreturnedEquipment(Connection dbconn, int memberId) throws SQLException {
         String query = "SELECT equipmentName FROM Borrow WHERE memberId = ? AND returnTime IS NULL";
         PreparedStatement pstmt = dbconn.prepareStatement(query);
@@ -530,7 +620,8 @@ public class Prog4 {
         pstmt.close();
     }
 
-    private static void updateCourseParticipantsOnMemberDeletion(Connection dbconn, String packageName) throws SQLException {
+    private static void updateCourseParticipantsOnMemberDeletion(Connection dbconn, String packageName)
+            throws SQLException {
         String courseQuery = "SELECT courseName FROM PackageCourse WHERE packageName = ?";
         PreparedStatement courseStmt = dbconn.prepareStatement(courseQuery);
         courseStmt.setString(1, packageName);
@@ -548,7 +639,8 @@ public class Prog4 {
         courseStmt.close();
     }
 
-    private static void deletePackageMemberRecord(Connection dbconn, String packageName, int memberId) throws SQLException {
+    private static void deletePackageMemberRecord(Connection dbconn, String packageName, int memberId)
+            throws SQLException {
         String deleteSql = "DELETE FROM PackageMembers WHERE packageName = ? AND memberId = ?";
         PreparedStatement pstmt = dbconn.prepareStatement(deleteSql);
         pstmt.setString(1, packageName);
@@ -705,17 +797,17 @@ public class Prog4 {
         Scanner sc = new Scanner(System.in);
         System.out.println(" OPERATION SELECTION: TYPE insert / update / delete");
         String operation = sc.nextLine();
-        if (operation.equals("insert")){
+        if (operation.equals("insert")) {
             System.out.println("Enter the name of the package course to add: ");
             String packageName = sc.nextLine();
             System.out.println("Enter course to include inside the package: ");
             String courseName = sc.nextLine();
             String add_query = "INSERT INTO packagecourse values (" +
-                    "\'" + packageName + "\', "+
+                    "\'" + packageName + "\', " +
                     "\'" + courseName + "')";
             stmt.executeUpdate(add_query);
         }
-        if (operation.equals("delete")){
+        if (operation.equals("delete")) {
             System.out.println("What is the name of the package you want to delete?");
             String packageName = sc.nextLine();
             String delete_query = "DELETE FROM packagecourse WHERE packageName = \'" +
@@ -760,7 +852,8 @@ public class Prog4 {
                 String phone = resultSet.getString("phone");
                 System.out.println("║ " + name + "\t║ " + phone);
             }
-            System.out.println("╚═════════════════════════════════════════════════════════════╝");;
+            System.out.println("╚═════════════════════════════════════════════════════════════╝");
+            ;
 
         }
     }
@@ -1010,7 +1103,7 @@ public class Prog4 {
                 " WHERE equipment.available = 0 ";
 
         ResultSet rs = stmt.executeQuery(query);
-        while (rs.next()){
+        while (rs.next()) {
             String id = rs.getString(1);
             String name = rs.getString(2);
             String phone = rs.getString(3);
